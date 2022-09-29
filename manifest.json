@@ -3,7 +3,7 @@
    "name": "Gitlab Coverage",
    "description": "Add coverage into repository explorer",
    "author": "Damien Duboeuf<smeagolworms4@gmail.com>",
-   "version": "1.0",
+   "version": "1.0.1",
    "icons": {
       "64" : "icon_64.png"
    },

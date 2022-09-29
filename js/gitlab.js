@@ -194,18 +194,20 @@
         
         dom.querySelectorAll('[filename]').forEach(node => {
             const nodeFilename = node.getAttribute('filename');
-            if (nodeFilename.indexOf(file) === 0) {
+            if (nodeFilename.indexOf(file+'/') === 0 || nodeFilename === file) {
           
-                classRates.push(node.getAttribute('line-rate') === '1');
-                
-                
-                node.querySelectorAll('method').forEach(method => {
-                    methodRates.push(method.getAttribute('line-rate') === '1');
-                });
-                
-                node.querySelectorAll('line').forEach(line => {
+                const lines = node.querySelectorAll('line');
+                lines.forEach(line => {
                     lineRates.push(line.getAttribute('hits') !== '0');
                 });
+                
+                if (lines.length) {
+                    classRates.push(node.getAttribute('line-rate') === '1');
+                    
+                    node.querySelectorAll('method').forEach(method => {
+                        methodRates.push(method.getAttribute('line-rate') === '1');
+                    });
+                }
             }
         });
         
@@ -292,8 +294,12 @@
         const path = getPath();
         document.querySelectorAll('.tree-item-file-name').forEach(td => {
             const name = td.innerText.trim();
+            
             if (!name || name === '..') {
                return;
+            }
+            if (td.querySelector('.coverage-hover')) {
+                return;
             }
             const file = path+name;
             applyCoverageOnPath(file, td);
@@ -306,8 +312,15 @@
                 const number = line.getAttribute('number');
                 const hits = line.getAttribute('hits');
                 
-                const target = document.querySelector(`[data-line-number="${number}"]`).parentElement;
-                
+                const child = document.querySelector(`.line-numbers [data-line-number="${number}"]`);
+                if (!child) {
+                    return;
+                }
+                const target = child.parentElement;
+                if (target.classList.contains('coverage-is-cover')) {
+                    return;
+                }
+                target.classList.add('coverage-is-cover');
                 
                 const parser = new DOMParser();
                 const div = parser.parseFromString(`
@@ -347,6 +360,7 @@
 
     dom = await getDomCoverage();
     await applyCoverage();
+    window.addEventListener('scroll', applyCoverage)
     
     let lastURL = document.location.href.toString();
     setInterval(() => {
