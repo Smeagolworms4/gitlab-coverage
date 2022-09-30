@@ -120,6 +120,38 @@
     }
 
 
+    let idEvent = 0;
+    const events = {};
+    window.addEventListener('message', message => {
+        if (message.data.type === 'gitlab-coverage-fetch-cobertura-ack') {
+            const event = events[message.data.id];
+            if (event) {
+                delete events[message.data.id];
+                if (message.data.success) {
+                    event.resolve(message.data.message);
+                } else {
+                    event.reject(message.data.error);
+                }
+            }
+        }
+    });
+    
+    const fecthCoverage = (filePath) => {
+        return new Promise((resolve, reject) => {
+            const id = ++idEvent;
+            events[id] = {
+                resolve,
+                reject,
+            };
+            window.postMessage({
+                type: 'gitlab-coverage-fetch-cobertura',
+                id,
+                url: gon.gitlab_url+filePath
+            });
+            
+        });
+    };
+
     const getCoverrage = async () => {
         try {
         
@@ -127,32 +159,8 @@
             if (!filePath) {
                 return null;
             }
-            const r = await fetch(gon.gitlab_url+filePath, {
-                headers: {
-                    'Content-Encoding': 'gzip',
-                    'Content-Type': 'application/json'
-                }
-            });
-            const body = await r.body;
-        
-            const decompressedReadableStream = body.pipeThrough(
-              new DecompressionStream('gzip')
-            );
-
-            let buffer = new Uint8Array(0);
-            const reader = decompressedReadableStream.getReader();
-            while (true) { // eslint-disable-line no-constant-condition
-                const { done, value } = await reader.read();
-                if (done) {
-                    break;
-                }
-                const newResult = new Uint8Array(buffer.length + value.length);
-                newResult.set(buffer);
-                newResult.set(value, buffer.length);
-                buffer = newResult;
-            }
-            const text = new TextDecoder().decode(buffer);
-            return text;
+            
+            return await fecthCoverage(filePath);
         }catch(e) {
             console.error(e);
         }

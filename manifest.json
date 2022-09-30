@@ -1,24 +1,28 @@
 {
-   "manifest_version": 3,
-   "name": "Gitlab Coverage",
-   "description": "Add coverage into repository explorer",
-   "author": "Damien Duboeuf<smeagolworms4@gmail.com>",
-   "version": "1.0.1",
-   "icons": {
-      "64" : "icon_64.png"
-   },
-   "web_accessible_resources": [
-   {
-      "resources": [ "js/gitlab.js" ],
-      "matches": [ "http://*/*", "https://*/*" ],
-      "use_dynamic_url": true
-   }],
-   "content_scripts": [
-      {
-         "js": ["js/load.js"],
-         "matches": [ "http://*/*", "https://*/*" ],
-         "run_at": "document_end",
-         "all_frames": true
-      }
-   ]
+    "manifest_version": 3,
+    "name": "Gitlab Coverage",
+    "description": "Add coverage into repository explorer",
+    "author": "Damien Duboeuf<smeagolworms4@gmail.com>",
+    "version": "1.0.2",
+    "icons": {
+        "64" : "icon_64.png"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [ "js/gitlab.js" ],
+            "matches": [ "http://*/*", "https://*/*" ],
+            "use_dynamic_url": true
+        }
+    ],
+    "background": {
+        "service_worker": "js/backgound.js"
+    },
+    "content_scripts": [
+        {
+            "js": ["js/load.js"],
+            "matches": [ "http://*/*", "https://*/*" ],
+            "run_at": "document_end",
+            "all_frames": true
+        }
+    ] 
 }
