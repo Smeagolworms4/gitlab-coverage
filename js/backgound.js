@@ -1,6 +1,5 @@
 const fetchCobertura = async(message, sendResponse) => {
     try {
-        console.log(message.cookie);
         const r = await fetch(message.url, {
             headers: {
                 cookie: message.cookie
