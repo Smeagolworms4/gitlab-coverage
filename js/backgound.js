@@ -1,6 +1,11 @@
 const fetchCobertura = async(message, sendResponse) => {
     try {
-        const r = await fetch(message.url);
+        console.log(message.cookie);
+        const r = await fetch(message.url, {
+            headers: {
+                cookie: message.cookie
+            }
+        });
         const body = await r.body;
          
         const decompressedReadableStream = body.pipeThrough(

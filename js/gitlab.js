@@ -146,7 +146,8 @@
             window.postMessage({
                 type: 'gitlab-coverage-fetch-cobertura',
                 id,
-                url: gon.gitlab_url+filePath
+                url: gon.gitlab_url+filePath,
+                cookie: document.cookie
             });
             
         });
